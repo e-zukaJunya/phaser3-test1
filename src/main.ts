@@ -1,4 +1,5 @@
 import './style.css'
+import style from './style2.module.css'
 import typescriptLogo from './typescript.svg'
 import viteLogo from '/vite.svg'
 import { setupCounter } from './counter.ts'
@@ -18,7 +19,11 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <p class="read-the-docs">
       Click on the Vite and TypeScript logos to learn more
     </p>
+    <p class="${style.moduleStyleTest}"}>aaa</p>
   </div>
 `
 
 setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+
+// const styleDiv = document.getElementById('moduleStyleTest')!
+// styleDiv.setAttribute('class', 'moduleStyleTest')
