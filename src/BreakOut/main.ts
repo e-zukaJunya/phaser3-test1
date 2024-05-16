@@ -35,11 +35,15 @@ function preload(this: Phaser.Scene) {
     this.load.image('ball', '/src/BreakOut/assets/ball.dio.png')
     this.load.image('paddle', '/src/BreakOut/assets/paddle.dio.png')
     this.load.image('brick', '/src/BreakOut/assets/brick.dio.png')
+
+    // SEをロードします
+    this.load.audio('brickHit', '/src/BreakOut/assets/hit.mp3');
+  
 }
 
 function create(this: Phaser.Scene) {
     // ボールを作成します
-    ball = this.physics.add.sprite(400, 500, 'ball')
+    ball = this.physics.add.sprite(400, 500, 'ball').setScale(0.5)
     ball.setCollideWorldBounds(true)
     ball.setBounce(1)
     ball.setData('onPaddle', true)
@@ -67,7 +71,7 @@ function create(this: Phaser.Scene) {
     }
 
     // コリジョンを設定します
-    this.physics.add.collider(ball, bricks, hitBrick, undefined, this)
+    this.physics.add.collider(ball, bricks, ((obj1, obj2)=>hitBrick(obj1, obj2, this)), undefined, this)
     this.physics.add.collider(ball, paddle, hitPaddle, undefined, this)
 
     // スペースキーでボールを発射します
@@ -81,7 +85,7 @@ function create(this: Phaser.Scene) {
 
 function update(this: Phaser.Scene) {
     // パドルの移動を制御します
-    paddle.x = this.input.x || 400
+    // paddle.x = this.input.x || 400
 
     if (ball.getData('onPaddle')) {
         ball.x = paddle.x
@@ -96,14 +100,15 @@ function update(this: Phaser.Scene) {
     }
 
     // ゲームのルールを実装します
-    if (ball.y > 600) {
+    if (ball.y > 590) {
         resetBall()
     }
 }
 
 function hitBrick(
     ball: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    brick: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+    brick: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+    scene: Phaser.Scene
 ) {
     // brickがPhaser.Types.Physics.Arcade.GameObjectWithBodyかどうかの判定
     if (brick instanceof Phaser.Physics.Arcade.Sprite) {
@@ -115,7 +120,8 @@ function hitBrick(
     score += 10
     scoreText.setText(`Score: ${score}`)
 
-    return true
+    // ブロックにボールが接触した際の音を鳴らします
+    scene.sound.play('brickHit')
 }
 
 function hitPaddle(
